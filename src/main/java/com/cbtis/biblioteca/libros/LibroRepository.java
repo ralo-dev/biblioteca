@@ -10,5 +10,6 @@ public interface LibroRepository extends JpaRepository<Libro, Long> {
 
     Iterable<Libro> findByTituloContainingIgnoreCase(String nombre);
     Iterable<Libro> findByAutorContainingIgnoreCase(String autor);
+    Iterable<Libro> findByIsbnContainingIgnoreCase(String isbn);
 
 }

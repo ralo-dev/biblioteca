@@ -25,8 +25,9 @@ public class Libro {
     private String edicion;
     private int anio;
     private String descripcion;
+    private int cantidad;
 
-    public Libro(String titulo, String autor, String editorial, String isbn, String edicion, int anio, String descripcion) {
+    public Libro(String titulo, String autor, String editorial, String isbn, String edicion, int anio, String descripcion, int cantidad) {
         this.titulo = titulo;
         this.autor = autor;
         this.editorial = editorial;
@@ -34,6 +35,7 @@ public class Libro {
         this.edicion = edicion;
         this.anio = anio;
         this.descripcion = descripcion;
+        this.cantidad = cantidad;
     }
 
 }

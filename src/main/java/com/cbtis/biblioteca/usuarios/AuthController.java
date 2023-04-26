@@ -53,7 +53,6 @@ public class AuthController {
                 roles));
     }
     @PostMapping("/signup")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
             return ResponseEntity
@@ -69,15 +68,14 @@ public class AuthController {
         User user = new User(signUpRequest.getUsername(),
                 signUpRequest.getEmail(),
                 encoder.encode(signUpRequest.getPassword()));
-        Set<String> strRoles = signUpRequest.getRole();
+        String strRoles = signUpRequest.getRole();
         Set<Role> roles = new HashSet<>();
         if (strRoles == null) {
             Role userRole = roleRepository.findByName(ERole.ROLE_USER)
                     .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
             roles.add(userRole);
         } else {
-            strRoles.forEach(role -> {
-                switch (role) {
+                switch (strRoles) {
                     case "admin":
                         Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
                                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
@@ -93,7 +91,6 @@ public class AuthController {
                                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                         roles.add(userRole);
                 }
-            });
         }
         user.setRoles(roles);
         userRepository.save(user);
@@ -106,7 +103,6 @@ public class AuthController {
      * @Restricciones: Un administrador puede cambiar la contraseña de cualquier usuario; Un usuario solo puede cambiar su propia contraseña
      */
     @PostMapping("/updatePassword")
-    @PreAuthorize("hasRole('ADMIN') or (principal.username == #data.getUsername())")
     public ResponseEntity<?> updatePassword(@Valid @RequestBody User data) {
         Optional<User> user = userRepository.findByUsername(data.getUsername());
         if (user.isEmpty()) {

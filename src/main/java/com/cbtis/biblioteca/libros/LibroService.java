@@ -38,4 +38,8 @@ public class LibroService {
     public Iterable<Libro> findByAutor(String autor) {
         return libroRepository.findByAutorContainingIgnoreCase(autor.toLowerCase());
     }
+
+    public Iterable<Libro> findByIsbn(String isbn) {
+        return libroRepository.findByIsbnContainingIgnoreCase(isbn);
+    }
 }
