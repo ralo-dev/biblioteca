@@ -9,7 +9,6 @@ import javax.validation.Valid;
 import com.cbtis.biblioteca.jwt.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -49,7 +48,8 @@ public class AuthController {
         return ResponseEntity.ok(new JwtResponse(jwt,
                 userDetails.getId(),
                 userDetails.getUsername(),
-                userDetails.getEmail(),
+                userDetails.getNombre(),
+                userDetails.getApellidos(),
                 roles));
     }
     @PostMapping("/signup")
@@ -59,14 +59,8 @@ public class AuthController {
                     .badRequest()
                     .body(new MessageResponse("Error: El nombre de usuario ya está siendo utilizado!"));
         }
-        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: El correo electrónico ya está siendo utilizado!"));
-        }
-        // Create new user's account
-        User user = new User(signUpRequest.getUsername(),
-                signUpRequest.getEmail(),
+        // Create new usuario's account
+        Usuario usuario = new Usuario(signUpRequest.getUsername(),
                 encoder.encode(signUpRequest.getPassword()));
         String strRoles = signUpRequest.getRole();
         Set<Role> roles = new HashSet<>();
@@ -92,9 +86,9 @@ public class AuthController {
                         roles.add(userRole);
                 }
         }
-        user.setRoles(roles);
-        userRepository.save(user);
-        return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+        usuario.setRoles(roles);
+        userRepository.save(usuario);
+        return ResponseEntity.ok(new MessageResponse("Usuario registered successfully!"));
     }
 
     /**
@@ -103,16 +97,16 @@ public class AuthController {
      * @Restricciones: Un administrador puede cambiar la contraseña de cualquier usuario; Un usuario solo puede cambiar su propia contraseña
      */
     @PostMapping("/updatePassword")
-    public ResponseEntity<?> updatePassword(@Valid @RequestBody User data) {
-        Optional<User> user = userRepository.findByUsername(data.getUsername());
+    public ResponseEntity<?> updatePassword(@Valid @RequestBody Usuario data) {
+        Optional<Usuario> user = userRepository.findByUsername(data.getUsername());
         if (user.isEmpty()) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: User not found!"));
+                    .body(new MessageResponse("Error: Usuario not found!"));
         }
         user.get().setPassword(encoder.encode(data.getPassword()));
         userRepository.save(user.get());
-        return ResponseEntity.ok(new MessageResponse("User updated successfully!"));
+        return ResponseEntity.ok(new MessageResponse("Usuario updated successfully!"));
     }
 
 
