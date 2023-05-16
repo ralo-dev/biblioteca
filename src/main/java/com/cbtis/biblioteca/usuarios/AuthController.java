@@ -3,6 +3,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 
@@ -24,6 +25,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
+
+    private final Logger log = Logger.getLogger(AuthController.class.getName());
+
     @Autowired
     AuthenticationManager authenticationManager;
     @Autowired
@@ -34,7 +38,7 @@ public class AuthController {
     PasswordEncoder encoder;
     @Autowired
     JwtUtils jwtUtils;
-    @PostMapping("/signin")
+    @PostMapping("/ingresar")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
@@ -52,7 +56,7 @@ public class AuthController {
                 userDetails.getApellidos(),
                 roles));
     }
-    @PostMapping("/signup")
+    @PostMapping("/registrar")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
             return ResponseEntity
@@ -60,6 +64,7 @@ public class AuthController {
                     .body(new MessageResponse("Error: El nombre de usuario ya está siendo utilizado!"));
         }
         // Create new usuario's account
+        log.info("Rol del usuario: " + signUpRequest.getRole());
         Usuario usuario = new Usuario(signUpRequest.getUsername(),
                 encoder.encode(signUpRequest.getPassword()));
         String strRoles = signUpRequest.getRole();
@@ -88,7 +93,7 @@ public class AuthController {
         }
         usuario.setRoles(roles);
         userRepository.save(usuario);
-        return ResponseEntity.ok(new MessageResponse("Usuario registered successfully!"));
+        return ResponseEntity.ok(new MessageResponse("Usuario registrado satisfactoriamente!"));
     }
 
     /**
@@ -96,17 +101,17 @@ public class AuthController {
      * @Requiere: Un usuario autenticado con cualquier rol
      * @Restricciones: Un administrador puede cambiar la contraseña de cualquier usuario; Un usuario solo puede cambiar su propia contraseña
      */
-    @PostMapping("/updatePassword")
+    @PostMapping("/actualizarContrasena")
     public ResponseEntity<?> updatePassword(@Valid @RequestBody Usuario data) {
         Optional<Usuario> user = userRepository.findByUsername(data.getUsername());
         if (user.isEmpty()) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: Usuario not found!"));
+                    .body(new MessageResponse("Error: Usuario no encontrado!"));
         }
         user.get().setPassword(encoder.encode(data.getPassword()));
         userRepository.save(user.get());
-        return ResponseEntity.ok(new MessageResponse("Usuario updated successfully!"));
+        return ResponseEntity.ok(new MessageResponse("Usuario actualizado!"));
     }
 
 

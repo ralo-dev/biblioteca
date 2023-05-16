@@ -13,9 +13,8 @@ import javax.persistence.*;
 public class Estudiante {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="numero_control")
-    private Integer numeroControl;
+    private String numeroControl;
 
     @Column(name="nombre_estudiante")
     private String nombreEstudiante;

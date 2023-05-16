@@ -19,5 +19,5 @@ public class PrestamoRequest {
 
     private String libro;
 
-    private Integer estudiante;
+    private String estudiante;
 }

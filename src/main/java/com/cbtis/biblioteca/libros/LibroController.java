@@ -39,17 +39,17 @@ public class LibroController {
         return libroService.findByIsbn(isbn);
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/eliminar/{id}")
     public void delete(@PathVariable String id) {
         libroService.delete(id);
     }
 
-    @PostMapping("/create")
+    @PostMapping("/registrar")
     public Libro create(@RequestBody Libro libro) {
         return libroService.create(libro);
     }
 
-    @PutMapping("/update")
+    @PutMapping("/actualizar")
     public Libro update(@RequestBody Libro libro) {
         return libroService.update(libro);
     }

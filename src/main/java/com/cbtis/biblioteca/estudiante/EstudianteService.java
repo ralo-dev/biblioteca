@@ -15,11 +15,11 @@ public class EstudianteService {
         return estudianteRepository.save(estudiante);
     }
 
-    public Estudiante findById(Integer id) {
+    public Estudiante findById(String id) {
         return estudianteRepository.findById(id).orElse(null);
     }
 
-    public void deleteById(Integer id) {
+    public void deleteById(String id) {
         estudianteRepository.deleteById(id);
     }
 

@@ -20,7 +20,7 @@ public class PrestamoService {
         this.libroService = libroService;
     }
 
-    public List<Prestamo> findByEstudianteNumeroControl (Integer numeroControl){
+    public List<Prestamo> findByEstudianteNumeroControl (String numeroControl){
         return prestamoRepository.findAllByEstudianteNumeroControl(numeroControl);
     }
 
