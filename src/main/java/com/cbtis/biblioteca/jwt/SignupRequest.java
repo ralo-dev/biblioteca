@@ -1,5 +1,6 @@
 package com.cbtis.biblioteca.jwt;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,6 +10,7 @@ import javax.validation.constraints.*;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class SignupRequest {
     @NotBlank
     @Size(min = 3, max = 20)

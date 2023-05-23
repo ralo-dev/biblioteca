@@ -15,11 +15,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -64,31 +60,32 @@ public class AuthController {
                     .body(new MessageResponse("Error: El nombre de usuario ya está siendo utilizado!"));
         }
         // Create new usuario's account
-        log.info("Rol del usuario: " + signUpRequest.getRole());
         Usuario usuario = new Usuario(signUpRequest.getUsername(),
                 encoder.encode(signUpRequest.getPassword()));
         String strRoles = signUpRequest.getRole();
+        usuario.setNombre(signUpRequest.getNombre());
+        usuario.setApellidos(signUpRequest.getApellidos());
         Set<Role> roles = new HashSet<>();
         if (strRoles == null) {
-            Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            roles.add(userRole);
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Error: El rol no puede ser nulo!"));
         } else {
                 switch (strRoles) {
                     case "admin":
                         Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                                .orElseThrow(() -> new RuntimeException("Error: No se encontró el rol "+strRoles+"!"));
                         roles.add(adminRole);
                         break;
-                    case "mod":
-                        Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                    case "librarian":
+                        Role modRole = roleRepository.findByName(ERole.ROLE_LIBRARIAN)
+                                .orElseThrow(() -> new RuntimeException("Error: No se encontró el rol "+strRoles+"!"));
                         roles.add(modRole);
                         break;
                     default:
-                        Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(userRole);
+                        return ResponseEntity
+                                .badRequest()
+                                .body(new MessageResponse("Error: No se encontró el rol "+strRoles+"!"));
                 }
         }
         usuario.setRoles(roles);
@@ -111,6 +108,47 @@ public class AuthController {
         }
         user.get().setPassword(encoder.encode(data.getPassword()));
         userRepository.save(user.get());
+        return ResponseEntity.ok(new MessageResponse("Usuario actualizado!"));
+    }
+
+    /**
+     * Obtiene la lista de usuarios
+     * @Requiere: Un usuario autenticado con rol de administrador
+     * @Restricciones: Solo un administrador puede obtener la lista de usuarios
+     * @return Lista de usuarios
+     */
+    @GetMapping("/usuarios")
+    public ResponseEntity<?> getUsers() {
+        List<Usuario> usuarios = userRepository.findAll();
+        usuarios.forEach(usuario -> usuario.setPassword(""));
+        return ResponseEntity.ok(usuarios);
+    }
+
+    @DeleteMapping("/usuarios/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable("id") long id) {
+        Optional<Usuario> usuario = userRepository.findById(id);
+        if (usuario.isEmpty()) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Error: Usuario no encontrado!"));
+        }
+        userRepository.delete(usuario.get());
+        return ResponseEntity.ok(new MessageResponse("Usuario eliminado!"));
+    }
+
+    @PutMapping("/usuarios/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable("id") long id, @Valid @RequestBody Usuario data) {
+        Optional<Usuario> usuario = userRepository.findById(id);
+        if (usuario.isEmpty()) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Error: Usuario no encontrado!"));
+        }
+        usuario.get().setUsername(data.getUsername());
+        usuario.get().setNombre(data.getNombre());
+        usuario.get().setApellidos(data.getApellidos());
+        usuario.get().setRoles(data.getRoles());
+        userRepository.save(usuario.get());
         return ResponseEntity.ok(new MessageResponse("Usuario actualizado!"));
     }
 

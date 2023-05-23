@@ -1,8 +1,10 @@
 package com.cbtis.biblioteca;
 
+import com.cbtis.biblioteca.jwt.SignupRequest;
 import com.cbtis.biblioteca.libros.Libro;
 import com.cbtis.biblioteca.usuarios.ERole;
 import com.cbtis.biblioteca.usuarios.Role;
+import com.cbtis.biblioteca.usuarios.Usuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -11,6 +13,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @SpringBootApplication
 public class BibliotecaApplication implements CommandLineRunner {
@@ -32,24 +35,21 @@ public class BibliotecaApplication implements CommandLineRunner {
 		libros.add(new Libro("La insoportable levedad del ser", "Milan Kundera", "Gallimard", "978-2070373694", "Primera Edición", 1984, "Una novela filosófica que explora temas como la libertad, el amor y la identidad a través de las historias entrelazadas de cuatro personajes",2));
 		libros.add(new Libro("Matar a un ruiseñor", "Harper Lee", "J. B. Lippincott & Co.", "978-0061120084", "Primera Edición", 1960, "Una novela clásica de la literatura estadounidense que sigue las vidas de los hermanos Jem y Scout Finch mientras su padre, un abogado, defiende a un hombre negro acusado injustamente",5));
 		/*
-		 */
+
 		for (Libro libro : libros) {
 			jdbcTemplate.update("INSERT INTO libros(titulo, autor, editorial, isbn, edicion, anio_publicacion, descripcion, cantidad) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
 					libro.getTitulo(), libro.getAutor(), libro.getEditorial(), libro.getIsbn(), libro.getEdicion(), libro.getAnioPublicacion(), libro.getDescripcion(), libro.getCantidad());
-		}
+		}*/
 
 		List<Role> roles = new ArrayList<>();
-		roles.add(new Role(ERole.ROLE_USER));
-		roles.add(new Role(ERole.ROLE_MODERATOR));
+		roles.add(new Role(ERole.ROLE_LIBRARIAN));
 		roles.add(new Role(ERole.ROLE_ADMIN));
 		/*
-		 */
-		for (Role rol : roles){
 
+		for (Role rol : roles){
 			jdbcTemplate.update("INSERT INTO roles(name) VALUES (?)",
 					rol.getName().toString());
-		}
-
+		}*/
 	}
 
 	public static void main(String[] args) {
