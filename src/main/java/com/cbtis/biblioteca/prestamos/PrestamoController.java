@@ -12,6 +12,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/prestamos")
+@CrossOrigin(origins = "*")
 public class PrestamoController {
 
     private final PrestamoService prestamoService;
