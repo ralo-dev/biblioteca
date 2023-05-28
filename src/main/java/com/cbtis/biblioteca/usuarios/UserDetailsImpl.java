@@ -27,6 +27,7 @@ public class UserDetailsImpl implements UserDetails {
         this.password = password;
         this.authorities = authorities;
     }
+
     public static UserDetailsImpl build(Usuario usuario) {
         List<GrantedAuthority> authorities = usuario.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName().name()))
@@ -37,6 +38,7 @@ public class UserDetailsImpl implements UserDetails {
                 usuario.getPassword(),
                 authorities);
     }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
@@ -71,5 +73,21 @@ public class UserDetailsImpl implements UserDetails {
             return false;
         UserDetailsImpl user = (UserDetailsImpl) o;
         return Objects.equals(id, user.id);
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getApellidos() {
+        return apellidos;
+    }
+
+    public void setApellidos(String apellidos) {
+        this.apellidos = apellidos;
     }
 }
