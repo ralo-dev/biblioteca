@@ -34,8 +34,8 @@ public class BibliotecaApplication implements CommandLineRunner {
 		libros.add(new Libro("Orgullo y prejuicio", "Jane Austen", "Thomas Egerton", "978-1593083250", "Primera Edición", 1813, "Una novela clásica de la literatura inglesa que sigue las complicadas relaciones amorosas de las hermanas Bennet en la Inglaterra del siglo XIX",2));
 		libros.add(new Libro("La insoportable levedad del ser", "Milan Kundera", "Gallimard", "978-2070373694", "Primera Edición", 1984, "Una novela filosófica que explora temas como la libertad, el amor y la identidad a través de las historias entrelazadas de cuatro personajes",2));
 		libros.add(new Libro("Matar a un ruiseñor", "Harper Lee", "J. B. Lippincott & Co.", "978-0061120084", "Primera Edición", 1960, "Una novela clásica de la literatura estadounidense que sigue las vidas de los hermanos Jem y Scout Finch mientras su padre, un abogado, defiende a un hombre negro acusado injustamente",5));
-		/*
 
+/*
 		for (Libro libro : libros) {
 			jdbcTemplate.update("INSERT INTO libros(titulo, autor, editorial, isbn, edicion, anio_publicacion, descripcion, cantidad) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
 					libro.getTitulo(), libro.getAutor(), libro.getEditorial(), libro.getIsbn(), libro.getEdicion(), libro.getAnioPublicacion(), libro.getDescripcion(), libro.getCantidad());

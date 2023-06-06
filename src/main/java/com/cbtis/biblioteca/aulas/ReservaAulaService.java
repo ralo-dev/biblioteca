@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ReservaAulaService {
@@ -18,7 +19,22 @@ public class ReservaAulaService {
         this.reservaAulaRepository = reservaAulaRepository;
     }
 
-    public ReservaAula reservarAula(String nombreProfesor, LocalDate fechaReserva, LocalTime horaInicio, LocalTime horaFin, String grupo, String materia) {
+    public ReservaAula actualizarReserva(ReservaAulaRequest request, Long reservaId){
+        Optional<ReservaAula> reservaAnterior = reservaAulaRepository.findById(reservaId);
+        if (!reservaAnterior.isPresent()) {
+            return null;
+        }
+        LocalDate fecha = LocalDate.parse(request.getFechaReserva());
+        LocalTime inicio = LocalTime.parse(request.getHoraInicio());
+        LocalTime fin = LocalTime.parse(request.getHoraFin());
+        String nombreProfesor = request.getNombreProfesor();
+        String grupo = request.getGrupo();
+        String materia = request.getMateria();
+        return reservarAula(reservaId, nombreProfesor, fecha, inicio, fin, grupo, materia);
+    }
+
+    public ReservaAula reservarAula(Long id, String nombreProfesor, LocalDate fechaReserva, LocalTime horaInicio, LocalTime horaFin, String grupo, String materia) {
+
         if (!puedeReservar(fechaReserva) || !esHoraValida(horaInicio, horaFin)) {
             return null;
         }
@@ -29,6 +45,9 @@ public class ReservaAulaService {
 
         List<ReservaAula> reservasExistente = reservaAulaRepository.findByFechaReserva(fechaReserva);
 
+        if (id != null) {
+            reservasExistente.removeIf(reserva -> reserva.getId().equals(id));
+        }
         // Verificar si hay alguna reserva existente que se superponga con el intervalo de tiempo proporcionado
         boolean haySuperposicion = reservasExistente.stream()
                 .anyMatch(reserva -> {
@@ -39,6 +58,7 @@ public class ReservaAulaService {
 
         if (!haySuperposicion) {
             ReservaAula reservaAula = new ReservaAula();
+            reservaAula.setId(id);
             reservaAula.setNombreProfesor(nombreProfesor);
             reservaAula.setFechaReserva(fechaReserva);
             reservaAula.setHoraInicio(horaInicio);
